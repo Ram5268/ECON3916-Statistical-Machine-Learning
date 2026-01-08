@@ -22,7 +22,7 @@ This portfolio leverages modern tools for economic data analysis:
 
 ## 📂 Repository Structure
 
-*[You can customize this section as you add coursework]*
+- Ongoing
 
 - `labs/` – Weekly lab assignments applying statistical and ML concepts
 - `projects/` – Larger projects integrating multiple techniques
