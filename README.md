@@ -77,5 +77,96 @@ The apparent wage boom in 2020 was not driven by increased labor productivity or
 
 The ECI series shows **no corresponding spike**, confirming that the 2020 wage surge was a **statistical artifact**, not a real increase in labor demand.
 
+"""
+Mexico Economic Snapshot – 2x3 Executive Dashboard
+-------------------------------------------------
+This script creates a 2x3 executive-style dashboard summarizing
+key macroeconomic indicators for Mexico using Matplotlib and Seaborn.
 
+DataFrame required: df_gtm (time-indexed)
+"""
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Ensure data is sorted by time
+df_gtm = df_gtm.sort_index()
+
+# -----------------------------
+# Styling
+# -----------------------------
+plt.style.use("dark_background")
+sns.set_theme(style="dark")
+
+fig, axes = plt.subplots(2, 3, figsize=(18, 10))
+fig.suptitle("Mexico Economic Snapshot", fontsize=20, fontweight="bold", y=0.98)
+
+x = df_gtm.index
+
+# -----------------------------
+# Top Left: Real GDP
+# -----------------------------
+axes[0, 0].plot(x, df_gtm["GDP_Const"], linewidth=2)
+axes[0, 0].set_title("Real GDP (Constant Prices)")
+axes[0, 0].grid(alpha=0.2)
+
+# -----------------------------
+# Top Middle: Inflation Rate
+# -----------------------------
+axes[0, 1].bar(x, df_gtm["Inflation_CPI"])
+axes[0, 1].axhline(0, linewidth=1.5)
+axes[0, 1].set_title("Inflation Rate (CPI)")
+axes[0, 1].grid(axis="y", alpha=0.2)
+
+# -----------------------------
+# Top Right: Unemployment Rate
+# -----------------------------
+axes[0, 2].plot(x, df_gtm["Unemployment_Rate"], linewidth=2)
+axes[0, 2].set_title("Unemployment Rate")
+axes[0, 2].grid(alpha=0.2)
+
+# -----------------------------
+# Bottom Left: Fiscal Balance
+# -----------------------------
+tax = df_gtm["Tax_Rev_GDP"]
+gov = df_gtm["Gov_Exp_GDP"]
+
+axes[1, 0].plot(x, tax, label="Tax Revenue (% GDP)")
+axes[1, 0].plot(x, gov, label="Gov Expenditure (% GDP)")
+axes[1, 0].fill_between(x, tax, gov, where=(tax >= gov), alpha=0.25, label="Surplus")
+axes[1, 0].fill_between(x, tax, gov, where=(tax < gov), alpha=0.25, label="Deficit")
+axes[1, 0].set_title("Fiscal Balance")
+axes[1, 0].legend(frameon=False)
+axes[1, 0].grid(alpha=0.2)
+
+# -----------------------------
+# Bottom Middle: Trade Balance
+# -----------------------------
+exp = df_gtm["Exports_GDP"]
+imp = df_gtm["Imports_GDP"]
+
+axes[1, 1].plot(x, exp, label="Exports (% GDP)")
+axes[1, 1].plot(x, imp, label="Imports (% GDP)")
+axes[1, 1].fill_between(x, exp, imp, where=(exp >= imp), alpha=0.25, label="Surplus")
+axes[1, 1].fill_between(x, exp, imp, where=(exp < imp), alpha=0.25, label="Deficit")
+axes[1, 1].set_title("Trade Balance")
+axes[1, 1].legend(frameon=False)
+axes[1, 1].grid(alpha=0.2)
+
+# -----------------------------
+# Bottom Right: Savings vs Investment
+# -----------------------------
+axes[1, 2].plot(x, df_gtm["Gross_Dom_Savings"], label="Savings")
+axes[1, 2].plot(x, df_gtm["Gross_Cap_Formation"], label="Investment")
+axes[1, 2].set_title("Savings vs Investment")
+axes[1, 2].legend(frameon=False)
+axes[1, 2].grid(alpha=0.2)
+
+# -----------------------------
+# Final Formatting
+# -----------------------------
+for ax in axes.flat:
+    ax.tick_params(axis="x", rotation=30)
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.show()
