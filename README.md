@@ -149,3 +149,38 @@ for ax in axes.flat:
 
 plt.tight_layout(rect=[0, 0, 1, 0.95])
 plt.show()
+
+The Cost of Living Crisis: A Data-Driven Analysis
+The Problem: Why the “Average” CPI Fails Students
+
+The official Consumer Price Index (CPI) is designed to measure inflation for an “average” household. However, this average obscures substantial variation in cost pressures across different demographic groups. For college students living in high-cost urban areas like Boston, spending patterns are heavily concentrated in tuition, rent, and food away from home—categories that have historically outpaced headline inflation.
+
+As a result, national CPI trends often understate the real cost-of-living pressures faced by students. This project investigates whether the official CPI meaningfully captures student inflation—or whether it systematically masks localized and demographic-specific pain.
+
+Methodology: Python, APIs, and Index Theory
+
+I constructed a custom Student Spending Price Index (Student SPI) using Python and publicly available economic data from the Federal Reserve Economic Data (FRED) API.
+
+The analysis follows a Laspeyres-style index framework, holding expenditure weights constant to isolate price changes over time. Key methodological steps include:
+
+Manually defining a student consumption basket (tuition, rent, food away from home, streaming services).
+
+Fetching official CPI component series via the FRED API.
+
+Normalizing all series to a common base year (2016 = 100) to resolve base-year distortions and enable valid comparison.
+
+Applying student-specific expenditure weights to generate a weighted Student SPI.
+
+Extending the analysis geographically by incorporating Boston–Cambridge–Newton CPI data to compare national, regional, and student-specific inflation trends.
+
+Visualizing divergence using Matplotlib, including shaded “inflation gaps” to highlight differences over time.
+
+This approach transforms CPI from a static statistic into a flexible analytical tool tailored to specific populations.
+
+Key Findings
+
+My analysis reveals a significant divergence between student cost inflation and national CPI, with the Student SPI rising approximately 30–40% more than the official CPI since 2016, depending on weighting assumptions.
+
+Additionally, regional analysis shows that Boston-area inflation consistently exceeds the national average, further compounding financial pressure on students in high-cost cities. The combined effect of demographic spending concentration and local price dynamics explains why students often experience inflation as worsening—even during periods when national CPI growth appears to moderate.
+
+Overall, this project demonstrates that inflation is not a single number but a distributional phenomenon, and that meaningful economic analysis requires tailoring metrics to the populations they aim to represent.
