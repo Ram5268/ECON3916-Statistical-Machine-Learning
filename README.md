@@ -184,3 +184,63 @@ My analysis reveals a significant divergence between student cost inflation and 
 Additionally, regional analysis shows that Boston-area inflation consistently exceeds the national average, further compounding financial pressure on students in high-cost cities. The combined effect of demographic spending concentration and local price dynamics explains why students often experience inflation as worsening—even during periods when national CPI growth appears to moderate.
 
 Overall, this project demonstrates that inflation is not a single number but a distributional phenomenon, and that meaningful economic analysis requires tailoring metrics to the populations they aim to represent.
+
+Lab 6: The Architecture of Bias
+
+Diagnosing Hidden Failure Modes in Machine Learning Data
+
+Overview
+
+This lab examines how bias enters machine learning systems before any model is trained, through the Data Generating Process (DGP), sampling design, and experimental infrastructure. Instead of treating bias as a modeling flaw, the project demonstrates that many analytical failures originate upstream in data collection, sampling variance, and system implementation.
+
+The lab combines statistical theory, applied simulation, and forensic testing to show how biased data can produce misleading conclusions even when models and performance metrics appear correct.
+
+Objective
+
+The goal of this project is to analyze and diagnose sampling bias, covariate shift, and experimental integrity failures in machine learning pipelines by stress-testing Simple Random Sampling, correcting distributional imbalance through Stratified Sampling, and detecting hidden engineering failures using Sample Ratio Mismatch (SRM) tests.
+
+Tech Stack
+
+Python
+pandas, numpy
+scipy.stats (Chi-Square tests)
+scikit-learn (Stratified Sampling)
+
+Methodology
+Simple Random Sampling (SRS) Simulation
+
+Using the Titanic dataset, I manually simulated repeated Simple Random Samples to demonstrate how unbiased sampling procedures can still generate unstable outcomes. The experiments showed high variance in class proportions, significant sampling error driven purely by randomness, and volatility in downstream metrics despite drawing from the same population.
+
+The key insight is that even statistically “correct” sampling methods can yield misleading results at small or moderate sample sizes due to variance alone.
+
+Stratified Sampling to Eliminate Covariate Shift
+
+To address this issue, I implemented Stratified Sampling using scikit-learn to enforce consistent class distributions across samples. This preserved the true population structure, eliminated covariate shift in the target variable, and significantly reduced variance without introducing bias.
+
+This demonstrates that bias is often not introduced by intent, but by failing to respect structure already present in the data.
+
+Sample Ratio Mismatch (SRM) Forensic Audit
+
+I then conducted a Sample Ratio Mismatch forensic audit using Chi-Square tests, a technique commonly used in large-scale A/B testing environments. This analysis detects discrepancies between expected and observed group assignments that may arise from load balancer failures, feature-flag misrouting, or silent engineering bugs.
+
+The core insight is that a statistically significant experimental result is meaningless if the experiment itself is compromised.
+
+Theoretical Extension: Survivorship Bias and Ghost Data
+
+Analyzing only successful Unicorn startups, such as those covered on TechCrunch, introduces Survivorship Bias because the dataset is conditionally filtered on success. Failed startups are systematically excluded, meaning observed relationships reflect post-selection outcomes rather than true causal drivers of success. As a result, predictors of success become confounded with predictors of visibility.
+
+To correct this bias using a Heckman Selection Model, we would need missing counterfactual data on failed or invisible startups. This includes firms that never raised venture capital, companies that shut down before scaling, and startups that were never covered by media outlets. This missing information is referred to as Ghost Data: data that should exist in the population but is absent due to selection mechanisms.
+
+The Heckman two-step correction addresses this problem by first modeling the probability that a startup is observed (for example, appearing in TechCrunch), and then adjusting outcome estimates using the inverse Mills ratio to control for non-random selection. Without Ghost Data on failures, any inference about what makes a startup successful is structurally biased.
+
+Key Takeaways
+
+Bias often enters machine learning systems before modeling begins
+Random sampling can still produce unreliable and misleading results
+Stratification is a structural correction, not a modeling shortcut
+SRM tests are essential for validating experimental integrity
+Survivorship Bias is fundamentally a data visibility problem, not a modeling problem
+
+Why This Matters
+
+This lab reframes machine learning bias as an architectural issue rather than a purely algorithmic one. It emphasizes that strong models cannot compensate for flawed data pipelines and that reliable inference requires careful attention to sampling design, experimental infrastructure, and missing data mechanisms.
