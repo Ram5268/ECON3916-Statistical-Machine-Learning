@@ -245,7 +245,7 @@ Why This Matters
 
 This lab reframes machine learning bias as an architectural issue rather than a purely algorithmic one. It emphasizes that strong models cannot compensate for flawed data pipelines and that reliable inference requires careful attention to sampling design, experimental infrastructure, and missing data mechanisms.
 
-Hypothesis Testing & Causal Evidence Architecture
+Lab 8: Hypothesis Testing & Causal Evidence Architecture
 Overview
 
 In this lab, I operationalized the scientific method on the Lalonde (1986) experimental dataset to move beyond descriptive estimation and into formal falsification. Rather than asking, “What is the estimated effect?” the focus shifted to a more disciplined question: “Can the null hypothesis of no treatment effect survive empirical contradiction?”
@@ -339,3 +339,28 @@ Falsification protects.
 
 This project demonstrates how structured hypothesis testing transforms raw treatment effects into defensible causal evidence—aligning statistical rigor with decision-grade business intelligence.
 “Return-Aware Experimentation” at Netflix reframes A/B testing around expected business value rather than rigid statistical convention. Instead of optimizing purely for p < 0.05, the decision threshold incorporates effect size, uncertainty, rollout risk, and projected revenue or engagement impact. A small lift with massive scale may justify deployment even at higher p-values, while a statistically significant but economically trivial result may not ship. In practice, decision thresholds are business parameters—tied to ROI, risk tolerance, and opportunity cost—not just scientific rituals.
+
+Lab 9: Recovering Experimental Truths via Propensity Score Matching
+Objective
+
+To correct severe selection bias in observational earnings data and recover a credible estimate of the causal impact of job training using Propensity Score Matching (PSM).
+
+Methodology
+
+Modeled Selection Bias:
+Leveraged the observational subset of the Lalonde dataset to diagnose the failure of naive mean comparisons, which produced a severely biased estimate of treatment impact.
+
+Estimated Propensity Scores:
+Built logistic regression models in Python (Pandas, Scikit-Learn) to estimate each individual’s probability of receiving treatment conditional on pre-treatment covariates, formally modeling the selection mechanism.
+
+Applied Nearest-Neighbor Matching:
+Implemented nearest-neighbor matching algorithms to pair treated individuals with observationally equivalent controls, constructing a balanced pseudo-experimental sample.
+
+Validated Balance and Causal Recovery:
+Evaluated covariate balance post-matching to ensure that treatment and control groups were statistically comparable prior to outcome estimation.
+
+Key Findings
+
+The naive observational estimate suggested a large negative treatment effect (−$15,204), reflecting substantial selection bias. After implementing Propensity Score Matching, I successfully recovered the experimental benchmark effect of approximately +$1,800 in real earnings.
+
+This project demonstrates how careful modeling of the assignment mechanism can transform observational failure into credible causal inference, reinforcing that identification strategy—not just statistical significance—determines empirical truth.
