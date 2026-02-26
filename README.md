@@ -338,3 +338,4 @@ Estimation informs.
 Falsification protects.
 
 This project demonstrates how structured hypothesis testing transforms raw treatment effects into defensible causal evidence—aligning statistical rigor with decision-grade business intelligence.
+“Return-Aware Experimentation” at Netflix reframes A/B testing around expected business value rather than rigid statistical convention. Instead of optimizing purely for p < 0.05, the decision threshold incorporates effect size, uncertainty, rollout risk, and projected revenue or engagement impact. A small lift with massive scale may justify deployment even at higher p-values, while a statistically significant but economically trivial result may not ship. In practice, decision thresholds are business parameters—tied to ROI, risk tolerance, and opportunity cost—not just scientific rituals.
