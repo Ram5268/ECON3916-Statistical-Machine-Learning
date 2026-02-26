@@ -244,3 +244,97 @@ Survivorship Bias is fundamentally a data visibility problem, not a modeling pro
 Why This Matters
 
 This lab reframes machine learning bias as an architectural issue rather than a purely algorithmic one. It emphasizes that strong models cannot compensate for flawed data pipelines and that reliable inference requires careful attention to sampling design, experimental infrastructure, and missing data mechanisms.
+
+Hypothesis Testing & Causal Evidence Architecture
+Overview
+
+In this lab, I operationalized the scientific method on the Lalonde (1986) experimental dataset to move beyond descriptive estimation and into formal falsification. Rather than asking, “What is the estimated effect?” the focus shifted to a more disciplined question: “Can the null hypothesis of no treatment effect survive empirical contradiction?”
+
+This project reframes causal inference as an exercise in epistemology. Estimation produces numbers. Falsification tests whether those numbers withstand adversarial scrutiny.
+
+Objective
+
+The core objective was to adjudicate between competing causal narratives surrounding the impact of job training on post-intervention earnings.
+
+Instead of relying solely on point estimates, I constructed a structured hypothesis testing pipeline to:
+
+Define the Null Hypothesis (no treatment effect on earnings).
+
+Quantify signal relative to noise.
+
+Stress-test statistical conclusions under relaxed distributional assumptions.
+
+Reject or fail to reject the null through formal contradiction.
+
+The outcome was a statistically significant Average Treatment Effect of approximately $1,795 in real earnings, achieved through disciplined inferential testing rather than exploratory estimation.
+
+Technical Approach
+
+All inferential procedures were implemented using the scientific computing stack in Python, leveraging scipy for robust statistical testing.
+
+Parametric Inference (Welch’s T-Test)
+
+Estimated the Average Treatment Effect (ATE) under unequal variance assumptions.
+
+Computed the signal-to-noise ratio to evaluate treatment lift relative to sampling dispersion.
+
+Selected Welch’s correction to avoid homoskedasticity bias.
+
+Explicitly controlled for Type I error via pre-specified significance thresholds.
+
+Non-Parametric Validation (Permutation Testing, 10,000 Resamples)
+
+Constructed an empirical null distribution via random reassignment of treatment labels.
+
+Removed reliance on normality assumptions, appropriate given skewed earnings distributions.
+
+Benchmarked observed ATE against simulated counterfactual distributions.
+
+Verified statistical significance under distribution-free inference.
+
+This dual-framework architecture ensures that statistical rejection is not an artifact of parametric assumptions.
+
+Key Findings
+
+Observed lift in real earnings: ~$1,795
+
+Result remained statistically significant under both parametric and non-parametric testing
+
+Null Hypothesis rejected via statistical contradiction
+
+The consistency of results across testing frameworks strengthens the evidentiary claim of causal impact.
+
+Business Insight
+
+Rigorous hypothesis testing functions as the safety valve of the algorithmic economy.
+
+In high-dimensional environments, it is trivially easy to surface correlations. Without falsification protocols, organizations drift toward:
+
+Data dredging
+
+P-hacking
+
+Narrative overfitting
+
+Spurious pattern recognition
+
+Hypothesis testing introduces disciplined friction. By formally controlling Type I errors and validating findings against empirical null distributions, we prevent false positives from scaling into product decisions, investment theses, or automated systems.
+
+In a tech firm context, this discipline protects:
+
+Model deployment integrity
+
+Capital allocation decisions
+
+Experimentation pipelines
+
+Executive dashboards
+
+Causal evidence architecture is not academic hygiene. It is infrastructure.
+
+Takeaway
+
+Estimation informs.
+Falsification protects.
+
+This project demonstrates how structured hypothesis testing transforms raw treatment effects into defensible causal evidence—aligning statistical rigor with decision-grade business intelligence.
