@@ -364,3 +364,22 @@ Key Findings
 The naive observational estimate suggested a large negative treatment effect (−$15,204), reflecting substantial selection bias. After implementing Propensity Score Matching, I successfully recovered the experimental benchmark effect of approximately +$1,800 in real earnings.
 
 This project demonstrates how careful modeling of the assignment mechanism can transform observational failure into credible causal inference, reinforcing that identification strategy—not just statistical significance—determines empirical truth.
+
+Tree-Based Models — Random Forests
+Objective
+Benchmark ensemble tree-based methods against linear and single-tree baselines on the California Housing dataset to quantify predictive gains, interrogate feature importance, and deploy an interactive diagnostic dashboard.
+Methodology
+
+Data: California Housing dataset (20,640 observations, 8 numeric features covering geographic, demographic, and structural characteristics).
+Regression benchmarking: Fit Decision Tree, Ridge Regression, and Random Forest regressors on a consistent train/test split; evaluated via R² and residual diagnostics.
+Hyperparameter tuning: Optimized Random Forest via GridSearchCV across n_estimators, max_depth, and max_features, using cross-validated scoring to select the final specification.
+Feature importance analysis: Extracted Mean Decrease in Impurity (MDI) importances and compared them against permutation-based importances to distinguish split-frequency artifacts from true predictive contribution.
+Classification extension: Reframed the target as a binary outcome and benchmarked a Random Forest classifier against logistic regression, using ROC–AUC as the primary discrimination metric.
+Interactive dashboard: Built a Plotly + ipywidgets interface to explore predictions, feature importance rankings, and performance metrics dynamically.
+
+Key Findings
+
+The tuned Random Forest achieved R² = [YOUR VALUE], substantially outperforming Ridge Regression at R² = [YOUR VALUE], indicating meaningful nonlinearity and feature interaction in the housing price surface that a linear specification cannot capture.
+MDI and permutation importance produced qualitatively consistent top-feature rankings but diverged on mid-tier variables, consistent with the well-documented MDI bias toward high-cardinality features.
+In the classification setting, the Random Forest delivered a higher AUC than logistic regression, reinforcing the case for tree ensembles when the conditional mean structure is nonlinear.
+Overall, the exercise illustrates a standard applied-ML trade-off: ensemble methods offer material predictive improvement at the cost of interpretability, which is partially recovered through complementary importance diagnostics and interactive exploration tools.
