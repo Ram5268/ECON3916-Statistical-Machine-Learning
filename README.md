@@ -383,3 +383,36 @@ The tuned Random Forest achieved R² = [YOUR VALUE], substantially outperforming
 MDI and permutation importance produced qualitatively consistent top-feature rankings but diverged on mid-tier variables, consistent with the well-documented MDI bias toward high-cardinality features.
 In the classification setting, the Random Forest delivered a higher AUC than logistic regression, reinforcing the case for tree ensembles when the conditional mean structure is nonlinear.
 Overall, the exercise illustrates a standard applied-ML trade-off: ensemble methods offer material predictive improvement at the cost of interpretability, which is partially recovered through complementary importance diagnostics and interactive exploration tools.
+
+# Clustering World Economies with K-Means & PCA
+
+## Objective
+
+An unsupervised machine learning study of cross-country development data, testing whether algorithmic clustering of ten standardized World Development Indicators recovers groupings consistent with the World Bank's expert-defined income classifications.
+
+## Methodology
+
+- **Data acquisition.** Fetched ten World Development Indicators for roughly 160 countries via the World Bank WDI API (`wbgapi`), spanning income (GDP per capita at PPP), health (life expectancy, infant mortality), education (primary enrollment), inequality (Gini), environment (CO₂ per capita), connectivity (internet penetration), trade openness (trade as a share of GDP), labor (unemployment rate), and urbanization.
+- **Cleaning and imputation.** Dropped countries missing more than three of the ten indicators and imputed remaining gaps with column-wise medians to preserve cross-country comparability.
+- **Feature standardization.** Applied `StandardScaler` so each indicator contributed equally to the Euclidean distance metric underlying K-Means. Without this step, GDP per capita — spanning roughly $300 to $120,000 — would have dominated the distance calculation and effectively collapsed the problem to a single variable.
+- **Clustering.** Fit K-Means with K=4 and a fixed random seed to mirror the World Bank's four-tier income taxonomy (Low, Lower-Middle, Upper-Middle, High).
+- **Dimensionality reduction.** Projected the standardized feature space onto its first two principal components via PCA for two-dimensional visualization of cluster geometry.
+- **Model selection.** Evaluated K = 2 through 10 using both the elbow method (within-cluster sum of squares) and silhouette analysis to stress-test the K=4 choice.
+- **Validation.** Cross-tabulated cluster assignments against World Bank income classifications to quantify the alignment between unsupervised structure and expert-defined groupings.
+- **Generalization.** Applied the identical pipeline to the California Housing census-tract dataset, clustering tracts on housing and demographic features to recover economically coherent regional groupings.
+
+## Key Findings
+
+- The first two principal components captured approximately **[XX]%** of the total variance in the ten-indicator feature space, producing a visible development gradient along PC1 separating high-income, high-life-expectancy economies from low-income, high-mortality ones.
+- Silhouette analysis identified **K=[X]** as the mathematically optimal cluster count, though K=4 remained the most economically interpretable choice given its correspondence with existing income tiers.
+- Cluster-to-income-group alignment was strongest at the tails — low-income and high-income countries were classified almost deterministically — and weakest in the middle, where **[note where your upper-middle vs lower-middle clusters bled into each other]**. This is consistent with the well-documented heterogeneity of middle-income economies on non-GDP dimensions.
+- The divergence between algorithmic clusters and expert classifications is itself the finding: countries at similar GDP levels can differ substantially on health, connectivity, inequality, and environmental dimensions, and an unsupervised method recovers that structure without being told to.
+- On the California Housing data, the pipeline surfaced clusters that map onto recognizable economic geographies — **[insert your cluster labels, e.g., coastal high-income, inland agricultural, urban high-density, suburban middle-income]**.
+
+## Reproducibility
+
+All K-Means fits use `random_state=42`. The full preprocessing, modeling, and evaluation pipeline is contained in `notebooks/lab_ch22_guided.ipynb`, with figures exported to `figures/`.
+
+## Stack
+
+`wbgapi` · `pandas` · `scikit-learn` (`KMeans`, `StandardScaler`, `PCA`, `silhouette_score`) · `matplotlib` · `seaborn`
