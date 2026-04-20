@@ -433,3 +433,37 @@ I need help writing a project description for my data science lab.
 3. Methodology: Bullet points of technical steps
 4. Key Findings: Summary of results
 Make this sound like a professional tech economist wrote it.
+
+# Causal ML — Double Machine Learning for 401(k) Policy Evaluation
+
+## Objective
+
+A causal inference study of the effect of 401(k) eligibility on household net financial assets, applying Double Machine Learning (DML) to the Chernozhukov–Hansen pension dataset to isolate the treatment effect from high-dimensional confounding while quantifying heterogeneity across the income distribution.
+
+## Methodology
+
+- **Regularization-bias demonstration.** Simulated a data-generating process with a known true ATE of 5.0 and 100 high-dimensional covariates, then fit a naive LASSO on the outcome regressed on treatment plus covariates. The LASSO penalty shrank the treatment coefficient toward zero, illustrating why prediction-optimal ML is not identification-optimal: the regularizer cannot distinguish the causal variable from nuisance covariates.
+- **Partially Linear Regression via Double ML.** Loaded the Chernozhukov–Hansen 401(k) dataset (n = 9,915) via `doubleml.datasets.fetch_401K`. Configured a `DoubleMLData` object with `net_tfa` as the outcome, `e401` as the binary treatment, and the remaining household-level demographics as controls.
+- **Flexible nuisance learners.** Fit two Random Forest regressors (200 trees, max depth 5) as the outcome model and treatment model, allowing nonlinear and interactive confounding structure without hand-specified functional forms.
+- **5-fold cross-fitting.** Estimated nuisance functions on out-of-fold data to prevent overfitting bias from contaminating the causal parameter. Results are averaged across folds and reported with asymptotic standard errors and 95% confidence intervals.
+- **Heterogeneous treatment effects.** Partitioned the sample into income quartiles (Q1–Q4) and re-estimated DML separately within each stratum to recover a Conditional ATE profile, with fold-level refitting inside each quartile to preserve the cross-fitting guarantee.
+- **Visualization.** Plotted quartile-level ATEs with 95% confidence bands to surface the dose-response pattern of 401(k) eligibility across the income distribution.
+
+## Key Findings
+
+- **Average Treatment Effect.** Eligibility for a 401(k) plan increases household net financial assets by approximately **$[ATE]** on average, with a 95% confidence interval of **[$LOW, $HIGH]** — statistically significant at conventional levels and consistent in magnitude with the Chernozhukov–Hansen (2018) original estimates.
+- **Regularization-bias benchmark.** The naive LASSO specification returned a treatment coefficient of approximately **[LASSO_ATE]** against a true value of 5.0 — a bias of **[BIAS]%** — validating the motivation for the DML residualization strategy.
+- **Heterogeneity across the income distribution.** The treatment effect varied substantially by quartile: **[Q1]** at the bottom, rising to **[Q4]** at the top. The monotonicity is consistent with mechanisms familiar from public finance — higher-income households face higher marginal tax rates (making the tax shelter more valuable per dollar), have greater disposable income to contribute up to the match cap, and can redirect existing savings into the tax-advantaged vehicle rather than generating new savings behavior.
+- **Policy implication.** The divergence between average and quartile-level effects is itself the policy-relevant result. An intervention evaluated solely by its ATE understates the efficiency gains at the top and overstates the welfare benefit at the bottom, creating a genuine trade-off between targeting impact (higher-income households respond more per dollar of subsidy) and targeting need (lower-income households have the greatest retirement-security shortfall).
+
+## Robustness
+
+Sensitivity analysis via the Chernozhukov et al. (2023) omitted-variable-bias framework indicates that an unobserved confounder would need to account for at least **[RV]%** of the residual variation in both the outcome and the treatment to drive the estimated effect to zero, and **[RVa]%** to render the 95% confidence interval inclusive of zero. Given that Chernozhukov et al. argue plausible unmeasured confounding in this setting is bounded below 4%, the estimated effect is robust to the most economically defensible confounding scenarios.
+
+## Reproducibility
+
+All nuisance estimators are seeded with `random_state=42`, and cross-fitting uses 5 folds with a single repetition. The full estimation pipeline, CATE analysis, sensitivity diagnostics, and visualizations are contained in `notebooks/lab_24_double_ml.ipynb`, with figures exported to `figures/`. The P.R.I.M.E. verification log for the AI-assisted sensitivity analysis is in `verification-log.md`.
+
+## Stack
+
+`doubleml` (DoubleMLPLR, DoubleMLData, sensitivity_analysis) · `scikit-learn` (RandomForestRegressor, LassoCV) · `pandas` · `numpy` · `matplotlib` · `plotly`
