@@ -416,3 +416,20 @@ All K-Means fits use `random_state=42`. The full preprocessing, modeling, and ev
 ## Stack
 
 `wbgapi` · `pandas` · `scikit-learn` (`KMeans`, `StandardScaler`, `PCA`, `silhouette_score`) · `matplotlib` · `seaborn`
+
+I need help writing a project description for my data science lab.
+**Important Rule:** Do NOT generate any Python code for me.
+**What I did in this lab:**
+* Loaded and preprocessed FOMC meeting minutes (tokenized, lemmatized, stop words removed)
+* Built a TF-IDF document-term matrix with unigrams and bigrams
+* Computed Loughran-McDonald sentiment scores (net sentiment + uncertainty)
+* Visualized sentiment trends across 20+ years of FOMC minutes
+* Clustered FOMC documents with K-Means on PCA-reduced TF-IDF vectors
+* Compared pre-COVID vs post-COVID sentiment distributions
+* Key finding: K-Means (K=3) on PCA-reduced TF-IDF vectors (50 components, 83.7% explained variance, silhouette=0.176) recovered three temporally coherent language regimes — an early-2000s cluster, a 2008–2009 crisis cluster, and a post-2009 modern-communication cluster — suggesting the Fed's vocabulary evolves in discrete era-shifts rather than smoothly. Sentiment analysis showed net sentiment dropped roughly two-thirds from pre-COVID (0.0081) to post-COVID (0.0028), a statistically significant shift toward more negative language, while uncertainty remained essentially flat (0.0219 vs 0.0212) — indicating the Fed's tone darkened after March 2020 but its rate of hedging language stayed baked into the standard forward-guidance template.
+**Please write a README.md entry including:**
+1. Project Title: FedSpeak Analysis — NLP on FOMC Minutes
+2. Objective: A professional one-sentence summary
+3. Methodology: Bullet points of technical steps
+4. Key Findings: Summary of results
+Make this sound like a professional tech economist wrote it.
