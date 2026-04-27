@@ -1,469 +1,142 @@
-# 📊 Economic Data Science Portfolio
+# ECON 3916: California Housing Value Prediction
 
-Welcome! This repository showcases my journey in **ECON 3916: Statistical & Machine Learning for Economics**, where I'm learning to bridge the gap between traditional economic theory and modern data science techniques.
+**Final project, Spring 2026.** Predicts the median home value of a California
+census block group from public demographic and geographic features. Built as a
+pre-screening triage tool for a hypothetical real-estate investment trust (REIT)
+acquisitions team.
 
-## About This Portfolio
+🔗 **Live dashboard:** https://YOUR-APP-NAME.streamlit.app *(replace with your actual URL after deploying)*
 
-As an economics student passionate about data-driven decision making, I'm building skills that combine **causal inference** with **predictive analytics**. This repository documents my exploration of how foundational statistical concepts scale into powerful machine learning applications.
-
-The course follows a **"Concept Extension" approach**: we start with core econometric principles (like regression analysis) and extend them using ML algorithms (like Lasso, Ridge, and ensemble methods). This framework helps me understand not just *how* to apply these tools, but *when* and *why* they're appropriate for economic questions.
-
-Through hands-on labs and projects, I'm developing the technical skills and economic intuition needed for roles in **data analysis, economic consulting, and finance**.
-
-## 🛠️ Tech Stack
-
-This portfolio leverages modern tools for economic data analysis:
-
-- **Python** 🐍 – Core programming language for analysis and modeling
-- **Pandas** – Data manipulation and cleaning
-- **Scikit-Learn** – Machine learning implementations
-- **Statsmodels** – Econometric modeling and statistical tests
-- **Google Colab** – Cloud-based development environment
-
-## 📂 Repository Structure
-
-- Ongoing
-
-- `labs/` – Weekly lab assignments applying statistical and ML concepts
-- `projects/` – Larger projects integrating multiple techniques
-- `notes/` – Key insights and methodology documentation
-
-## 🎯 What I'm Learning
-
-- Scaling traditional econometric methods with machine learning
-- Balancing prediction accuracy with causal interpretation
-- Applying regularization techniques to economic data
-- Model selection and validation in real-world contexts
+📄 **Five-page report:** [`report.pdf`](report.pdf)
+🧠 **AI methodology appendix:** [`ai_methodology_appendix.pdf`](ai_methodology_appendix.pdf)
 
 ---
 
-*This repository is actively maintained as I progress through the course. Feel free to explore, and don't hesitate to reach out if you'd like to discuss economics, data science, or potential opportunities!*
+## What's in this repo
 
-# The Illusion of Growth & the Composition Effect  
-**Deflating History with FRED**
+```
+.
+├── app.py                            # Streamlit dashboard (deployed)
+├── 3916-final-notebook.ipynb         # Full analysis pipeline
+├── report.pdf                        # 5-page SCR-structure report
+├── ai_methodology_appendix.pdf       # P.R.I.M.E. AI documentation
+├── requirements.txt                  # Pinned Python dependencies
+└── README.md                         # This file
+```
 
-## Objective  
-This project investigates long-run U.S. wage stagnation by correcting nominal wage data for inflation and labor-force composition bias. Using live macroeconomic data from the Federal Reserve Economic Data (FRED) API, the analysis demonstrates how apparent wage growth can be misleading when inflation and workforce composition are ignored. The project culminates in identifying and correcting the *Pandemic Wage Paradox*—the illusion of rising wages during 2020.
+The dataset is loaded directly from `sklearn.datasets.fetch_california_housing()`
+on first launch — no separate data download needed.
 
-## Methodology  
-
-### Data Ingestion & API Usage  
-A Python data pipeline was built to ingest and process real-time macroeconomic data from the FRED API using `fredapi`. The analysis relies on three primary datasets:
+---
 
-- **Average Hourly Earnings of Production and Nonsupervisory Employees (AHETPI)** — nominal wage series  
-- **Consumer Price Index (CPI)** — inflation adjustment  
-- **Employment Cost Index (ECI)** — composition-adjusted labor cost metric  
+## Reproducing the analysis
 
-### Inflation Adjustment (Deflating Wages)  
-Nominal wages were converted into **real wages** by deflating the AHETPI series with CPI data. This removes the *money illusion*—the tendency to mistake nominal wage increases for real purchasing power gains.
+### 1. Clone and set up
 
-### Detecting the Pandemic Anomaly  
-Time-series analysis revealed a sharp spike in real wages during 2020. Rather than interpreting this as genuine wage growth, the project hypothesized a **composition effect** caused by pandemic-era labor force disruption.
+```bash
+git clone https://github.com/Ram5268/ECON3916-Statistical-Machine-Learning.git
+cd ECON3916-Statistical-Machine-Learning
 
-### Composition Effect Correction  
-To test this hypothesis, the Employment Cost Index (ECI) was introduced as a control variable. Unlike average wage measures, ECI adjusts for changes in workforce composition. Comparing CPI-deflated wages against ECI trends isolates whether observed wage growth reflects true labor demand or a statistical artifact.
+# Create a virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate          # macOS/Linux
+# .venv\Scripts\activate           # Windows PowerShell
 
-## Key Findings  
+# Install dependencies
+pip install -r requirements.txt
+```
 
-### The Money Illusion  
-After adjusting for inflation, real wages for U.S. workers remain largely **flat over the past 50 years**, despite substantial nominal wage growth. This visualization highlights how inflation obscures stagnation in real purchasing power.
+### 2. Run the analysis notebook
 
-### The Pandemic Paradox  
-The apparent wage boom in 2020 was not driven by increased labor productivity or demand. Instead:
+```bash
+jupyter notebook 3916-final-notebook.ipynb
+```
 
-- Low-wage workers disproportionately exited the labor force  
-- The remaining workforce skewed higher-income  
-- Average wages mechanically increased despite no real improvement in compensation  
+Or open it in **Google Colab** (no install needed):
+File → Open → GitHub → paste the repo URL → select `3916-final-notebook.ipynb`.
+Then `Runtime → Run all`.
 
-The ECI series shows **no corresponding spike**, confirming that the 2020 wage surge was a **statistical artifact**, not a real increase in labor demand.
+The notebook trains three models (Linear Regression, Random Forest, Gradient
+Boosting), computes 5-fold CV scores, bootstrap 95% CIs on test metrics, and
+generates all figures in the report.
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+### 3. Run the Streamlit dashboard locally
 
-# Ensure time-ordered data
-df_gtm = df_gtm.sort_index()
+```bash
+streamlit run app.py
+```
 
-# -----------------------------
-# Styling
-# -----------------------------
-plt.style.use("dark_background")
-sns.set_theme(style="dark")
+The first launch trains the Random Forest (~30 sec, cached for the rest of the
+session). After that, sliders update predictions instantly.
 
-fig, axes = plt.subplots(2, 3, figsize=(18, 10))
-fig.suptitle("Mexico Economic Snapshot", fontsize=20, fontweight="bold", y=0.98)
+---
 
-x = df_gtm.index
+## Reproducibility guarantees
 
-# -----------------------------
-# Top Row
-# -----------------------------
-axes[0, 0].plot(x, df_gtm["GDP_Const"], linewidth=2)
-axes[0, 0].set_title("Real GDP (Constant Prices)")
-axes[0, 0].grid(alpha=0.2)
+| Source of randomness | Controlled? | How |
+|---|---|---|
+| `train_test_split` | ✅ | `random_state=42` |
+| `RandomForestRegressor` | ✅ | `random_state=42` |
+| `GradientBoostingRegressor` | ✅ | `random_state=42` |
+| Bootstrap resampling | ✅ | `np.random.default_rng(42)` |
+| Permutation importance | ✅ | `random_state=42` |
+| Subsample for plots | ✅ | `df.sample(..., random_state=42)` |
 
-axes[0, 1].bar(x, df_gtm["Inflation_CPI"])
-axes[0, 1].axhline(0, linewidth=1.5)
-axes[0, 1].set_title("Inflation Rate (CPI)")
-axes[0, 1].grid(axis="y", alpha=0.2)
+Re-running the notebook in any environment with the package versions in
+`requirements.txt` should reproduce every reported number to 4 decimal places.
 
-axes[0, 2].plot(x, df_gtm["Unemployment_Rate"], linewidth=2)
-axes[0, 2].set_title("Unemployment Rate")
-axes[0, 2].grid(alpha=0.2)
+---
 
-# -----------------------------
-# Bottom Row
-# -----------------------------
-tax = df_gtm["Tax_Rev_GDP"]
-gov = df_gtm["Gov_Exp_GDP"]
+## Deployment to Streamlit Community Cloud
 
-axes[1, 0].plot(x, tax, label="Tax Revenue (% GDP)")
-axes[1, 0].plot(x, gov, label="Gov Expenditure (% GDP)")
-axes[1, 0].fill_between(x, tax, gov, where=(tax >= gov), alpha=0.25)
-axes[1, 0].fill_between(x, tax, gov, where=(tax < gov), alpha=0.25)
-axes[1, 0].set_title("Fiscal Balance")
-axes[1, 0].legend(frameon=False)
-axes[1, 0].grid(alpha=0.2)
+1. Push this repo to GitHub (already done).
+2. Go to <https://streamlit.io/cloud> → sign in with GitHub.
+3. Click **"New app"** → choose this repo, branch `main`, main file `app.py`.
+4. Click **"Deploy"**. First build takes 2–5 minutes (installs from
+   `requirements.txt`); after that the model retrains on first user visit
+   per cloud-instance lifetime (~30 sec, then cached).
 
-exp = df_gtm["Exports_GDP"]
-imp = df_gtm["Imports_GDP"]
+The deployed URL is permanent and embedded in this README at the top.
 
-axes[1, 1].plot(x, exp, label="Exports (% GDP)")
-axes[1, 1].plot(x, imp, label="Imports (% GDP)")
-axes[1, 1].fill_between(x, exp, imp, where=(exp >= imp), alpha=0.25)
-axes[1, 1].fill_between(x, exp, imp, where=(exp < imp), alpha=0.25)
-axes[1, 1].set_title("Trade Balance")
-axes[1, 1].legend(frameon=False)
-axes[1, 1].grid(alpha=0.2)
+---
 
-axes[1, 2].plot(x, df_gtm["Gross_Dom_Savings"], label="Savings")
-axes[1, 2].plot(x, df_gtm["Gross_Cap_Formation"], label="Investment")
-axes[1, 2].set_title("Savings vs Investment")
-axes[1, 2].legend(frameon=False)
-axes[1, 2].grid(alpha=0.2)
+## Key results
 
-# -----------------------------
-# Final Layout
-# -----------------------------
-for ax in axes.flat:
-    ax.tick_params(axis="x", rotation=30)
+| Model | Test R² | Test RMSE | 5-fold CV R² |
+|---|---|---|---|
+| Linear Regression (baseline) | 0.576 | 0.746 (~$74.6k) | 0.612 ± 0.007 |
+| **Random Forest (deployed)** | **0.805** | **0.505 (~$50.5k)** | **0.804 ± 0.005** |
+| Gradient Boosting | (see notebook) | (see notebook) | (see notebook) |
 
-plt.tight_layout(rect=[0, 0, 1, 0.95])
-plt.show()
+Bootstrap 95% CIs and full methodology in the notebook and report.
 
-The Cost of Living Crisis: A Data-Driven Analysis
-The Problem: Why the “Average” CPI Fails Students
+---
 
-The official Consumer Price Index (CPI) is designed to measure inflation for an “average” household. However, this average obscures substantial variation in cost pressures across different demographic groups. For college students living in high-cost urban areas like Boston, spending patterns are heavily concentrated in tuition, rent, and food away from home—categories that have historically outpaced headline inflation.
+## Important caveats
 
-As a result, national CPI trends often understate the real cost-of-living pressures faced by students. This project investigates whether the official CPI meaningfully captures student inflation—or whether it systematically masks localized and demographic-specific pain.
+- **Predictive importance only.** Feature importances in the report describe
+  statistical association in 1990 California census data, **not causal effects**.
+  This model cannot tell you what *would happen* to home values if a
+  neighborhood's median income changed.
+- **Right-censored target.** `MedHouseVal` is top-coded at \$500,001 in the
+  source data. Predictions at or above this level are systematically biased
+  downward. The dashboard flags this and recommends human review.
+- **1990 data.** For production deployment, retrain on current Census ACS
+  5-year tract-level data.
 
-Methodology: Python, APIs, and Index Theory
+---
 
-I constructed a custom Student Spending Price Index (Student SPI) using Python and publicly available economic data from the Federal Reserve Economic Data (FRED) API.
+## Citation
 
-The analysis follows a Laspeyres-style index framework, holding expenditure weights constant to isolate price changes over time. Key methodological steps include:
+Pace, R.K. and Barry, R. (1997). "Sparse Spatial Autoregressions."
+*Statistics and Probability Letters*, 33: 291–297.
 
-Manually defining a student consumption basket (tuition, rent, food away from home, streaming services).
+Dataset accessed via:
+[`sklearn.datasets.fetch_california_housing`](https://scikit-learn.org/stable/datasets/real_world.html#california-housing-dataset).
+Access date: April 26, 2026.
 
-Fetching official CPI component series via the FRED API.
+---
 
-Normalizing all series to a common base year (2016 = 100) to resolve base-year distortions and enable valid comparison.
+## License
 
-Applying student-specific expenditure weights to generate a weighted Student SPI.
-
-Extending the analysis geographically by incorporating Boston–Cambridge–Newton CPI data to compare national, regional, and student-specific inflation trends.
-
-Visualizing divergence using Matplotlib, including shaded “inflation gaps” to highlight differences over time.
-
-This approach transforms CPI from a static statistic into a flexible analytical tool tailored to specific populations.
-
-Key Findings
-
-My analysis reveals a significant divergence between student cost inflation and national CPI, with the Student SPI rising approximately 30–40% more than the official CPI since 2016, depending on weighting assumptions.
-
-Additionally, regional analysis shows that Boston-area inflation consistently exceeds the national average, further compounding financial pressure on students in high-cost cities. The combined effect of demographic spending concentration and local price dynamics explains why students often experience inflation as worsening—even during periods when national CPI growth appears to moderate.
-
-Overall, this project demonstrates that inflation is not a single number but a distributional phenomenon, and that meaningful economic analysis requires tailoring metrics to the populations they aim to represent.
-
-Lab 6: The Architecture of Bias
-
-Diagnosing Hidden Failure Modes in Machine Learning Data
-
-Overview
-
-This lab examines how bias enters machine learning systems before any model is trained, through the Data Generating Process (DGP), sampling design, and experimental infrastructure. Instead of treating bias as a modeling flaw, the project demonstrates that many analytical failures originate upstream in data collection, sampling variance, and system implementation.
-
-The lab combines statistical theory, applied simulation, and forensic testing to show how biased data can produce misleading conclusions even when models and performance metrics appear correct.
-
-Objective
-
-The goal of this project is to analyze and diagnose sampling bias, covariate shift, and experimental integrity failures in machine learning pipelines by stress-testing Simple Random Sampling, correcting distributional imbalance through Stratified Sampling, and detecting hidden engineering failures using Sample Ratio Mismatch (SRM) tests.
-
-Tech Stack
-
-Python
-pandas, numpy
-scipy.stats (Chi-Square tests)
-scikit-learn (Stratified Sampling)
-
-Methodology
-Simple Random Sampling (SRS) Simulation
-
-Using the Titanic dataset, I manually simulated repeated Simple Random Samples to demonstrate how unbiased sampling procedures can still generate unstable outcomes. The experiments showed high variance in class proportions, significant sampling error driven purely by randomness, and volatility in downstream metrics despite drawing from the same population.
-
-The key insight is that even statistically “correct” sampling methods can yield misleading results at small or moderate sample sizes due to variance alone.
-
-Stratified Sampling to Eliminate Covariate Shift
-
-To address this issue, I implemented Stratified Sampling using scikit-learn to enforce consistent class distributions across samples. This preserved the true population structure, eliminated covariate shift in the target variable, and significantly reduced variance without introducing bias.
-
-This demonstrates that bias is often not introduced by intent, but by failing to respect structure already present in the data.
-
-Sample Ratio Mismatch (SRM) Forensic Audit
-
-I then conducted a Sample Ratio Mismatch forensic audit using Chi-Square tests, a technique commonly used in large-scale A/B testing environments. This analysis detects discrepancies between expected and observed group assignments that may arise from load balancer failures, feature-flag misrouting, or silent engineering bugs.
-
-The core insight is that a statistically significant experimental result is meaningless if the experiment itself is compromised.
-
-Theoretical Extension: Survivorship Bias and Ghost Data
-
-Analyzing only successful Unicorn startups, such as those covered on TechCrunch, introduces Survivorship Bias because the dataset is conditionally filtered on success. Failed startups are systematically excluded, meaning observed relationships reflect post-selection outcomes rather than true causal drivers of success. As a result, predictors of success become confounded with predictors of visibility.
-
-To correct this bias using a Heckman Selection Model, we would need missing counterfactual data on failed or invisible startups. This includes firms that never raised venture capital, companies that shut down before scaling, and startups that were never covered by media outlets. This missing information is referred to as Ghost Data: data that should exist in the population but is absent due to selection mechanisms.
-
-The Heckman two-step correction addresses this problem by first modeling the probability that a startup is observed (for example, appearing in TechCrunch), and then adjusting outcome estimates using the inverse Mills ratio to control for non-random selection. Without Ghost Data on failures, any inference about what makes a startup successful is structurally biased.
-
-Key Takeaways
-
-Bias often enters machine learning systems before modeling begins
-Random sampling can still produce unreliable and misleading results
-Stratification is a structural correction, not a modeling shortcut
-SRM tests are essential for validating experimental integrity
-Survivorship Bias is fundamentally a data visibility problem, not a modeling problem
-
-Why This Matters
-
-This lab reframes machine learning bias as an architectural issue rather than a purely algorithmic one. It emphasizes that strong models cannot compensate for flawed data pipelines and that reliable inference requires careful attention to sampling design, experimental infrastructure, and missing data mechanisms.
-
-Lab 8: Hypothesis Testing & Causal Evidence Architecture
-Overview
-
-In this lab, I operationalized the scientific method on the Lalonde (1986) experimental dataset to move beyond descriptive estimation and into formal falsification. Rather than asking, “What is the estimated effect?” the focus shifted to a more disciplined question: “Can the null hypothesis of no treatment effect survive empirical contradiction?”
-
-This project reframes causal inference as an exercise in epistemology. Estimation produces numbers. Falsification tests whether those numbers withstand adversarial scrutiny.
-
-Objective
-
-The core objective was to adjudicate between competing causal narratives surrounding the impact of job training on post-intervention earnings.
-
-Instead of relying solely on point estimates, I constructed a structured hypothesis testing pipeline to:
-
-Define the Null Hypothesis (no treatment effect on earnings).
-
-Quantify signal relative to noise.
-
-Stress-test statistical conclusions under relaxed distributional assumptions.
-
-Reject or fail to reject the null through formal contradiction.
-
-The outcome was a statistically significant Average Treatment Effect of approximately $1,795 in real earnings, achieved through disciplined inferential testing rather than exploratory estimation.
-
-Technical Approach
-
-All inferential procedures were implemented using the scientific computing stack in Python, leveraging scipy for robust statistical testing.
-
-Parametric Inference (Welch’s T-Test)
-
-Estimated the Average Treatment Effect (ATE) under unequal variance assumptions.
-
-Computed the signal-to-noise ratio to evaluate treatment lift relative to sampling dispersion.
-
-Selected Welch’s correction to avoid homoskedasticity bias.
-
-Explicitly controlled for Type I error via pre-specified significance thresholds.
-
-Non-Parametric Validation (Permutation Testing, 10,000 Resamples)
-
-Constructed an empirical null distribution via random reassignment of treatment labels.
-
-Removed reliance on normality assumptions, appropriate given skewed earnings distributions.
-
-Benchmarked observed ATE against simulated counterfactual distributions.
-
-Verified statistical significance under distribution-free inference.
-
-This dual-framework architecture ensures that statistical rejection is not an artifact of parametric assumptions.
-
-Key Findings
-
-Observed lift in real earnings: ~$1,795
-
-Result remained statistically significant under both parametric and non-parametric testing
-
-Null Hypothesis rejected via statistical contradiction
-
-The consistency of results across testing frameworks strengthens the evidentiary claim of causal impact.
-
-Business Insight
-
-Rigorous hypothesis testing functions as the safety valve of the algorithmic economy.
-
-In high-dimensional environments, it is trivially easy to surface correlations. Without falsification protocols, organizations drift toward:
-
-Data dredging
-
-P-hacking
-
-Narrative overfitting
-
-Spurious pattern recognition
-
-Hypothesis testing introduces disciplined friction. By formally controlling Type I errors and validating findings against empirical null distributions, we prevent false positives from scaling into product decisions, investment theses, or automated systems.
-
-In a tech firm context, this discipline protects:
-
-Model deployment integrity
-
-Capital allocation decisions
-
-Experimentation pipelines
-
-Executive dashboards
-
-Causal evidence architecture is not academic hygiene. It is infrastructure.
-
-Takeaway
-
-Estimation informs.
-Falsification protects.
-
-This project demonstrates how structured hypothesis testing transforms raw treatment effects into defensible causal evidence—aligning statistical rigor with decision-grade business intelligence.
-“Return-Aware Experimentation” at Netflix reframes A/B testing around expected business value rather than rigid statistical convention. Instead of optimizing purely for p < 0.05, the decision threshold incorporates effect size, uncertainty, rollout risk, and projected revenue or engagement impact. A small lift with massive scale may justify deployment even at higher p-values, while a statistically significant but economically trivial result may not ship. In practice, decision thresholds are business parameters—tied to ROI, risk tolerance, and opportunity cost—not just scientific rituals.
-
-Lab 9: Recovering Experimental Truths via Propensity Score Matching
-Objective
-
-To correct severe selection bias in observational earnings data and recover a credible estimate of the causal impact of job training using Propensity Score Matching (PSM).
-
-Methodology
-
-Modeled Selection Bias:
-Leveraged the observational subset of the Lalonde dataset to diagnose the failure of naive mean comparisons, which produced a severely biased estimate of treatment impact.
-
-Estimated Propensity Scores:
-Built logistic regression models in Python (Pandas, Scikit-Learn) to estimate each individual’s probability of receiving treatment conditional on pre-treatment covariates, formally modeling the selection mechanism.
-
-Applied Nearest-Neighbor Matching:
-Implemented nearest-neighbor matching algorithms to pair treated individuals with observationally equivalent controls, constructing a balanced pseudo-experimental sample.
-
-Validated Balance and Causal Recovery:
-Evaluated covariate balance post-matching to ensure that treatment and control groups were statistically comparable prior to outcome estimation.
-
-Key Findings
-
-The naive observational estimate suggested a large negative treatment effect (−$15,204), reflecting substantial selection bias. After implementing Propensity Score Matching, I successfully recovered the experimental benchmark effect of approximately +$1,800 in real earnings.
-
-This project demonstrates how careful modeling of the assignment mechanism can transform observational failure into credible causal inference, reinforcing that identification strategy—not just statistical significance—determines empirical truth.
-
-Tree-Based Models — Random Forests
-Objective
-Benchmark ensemble tree-based methods against linear and single-tree baselines on the California Housing dataset to quantify predictive gains, interrogate feature importance, and deploy an interactive diagnostic dashboard.
-Methodology
-
-Data: California Housing dataset (20,640 observations, 8 numeric features covering geographic, demographic, and structural characteristics).
-Regression benchmarking: Fit Decision Tree, Ridge Regression, and Random Forest regressors on a consistent train/test split; evaluated via R² and residual diagnostics.
-Hyperparameter tuning: Optimized Random Forest via GridSearchCV across n_estimators, max_depth, and max_features, using cross-validated scoring to select the final specification.
-Feature importance analysis: Extracted Mean Decrease in Impurity (MDI) importances and compared them against permutation-based importances to distinguish split-frequency artifacts from true predictive contribution.
-Classification extension: Reframed the target as a binary outcome and benchmarked a Random Forest classifier against logistic regression, using ROC–AUC as the primary discrimination metric.
-Interactive dashboard: Built a Plotly + ipywidgets interface to explore predictions, feature importance rankings, and performance metrics dynamically.
-
-Key Findings
-
-The tuned Random Forest achieved R² = [YOUR VALUE], substantially outperforming Ridge Regression at R² = [YOUR VALUE], indicating meaningful nonlinearity and feature interaction in the housing price surface that a linear specification cannot capture.
-MDI and permutation importance produced qualitatively consistent top-feature rankings but diverged on mid-tier variables, consistent with the well-documented MDI bias toward high-cardinality features.
-In the classification setting, the Random Forest delivered a higher AUC than logistic regression, reinforcing the case for tree ensembles when the conditional mean structure is nonlinear.
-Overall, the exercise illustrates a standard applied-ML trade-off: ensemble methods offer material predictive improvement at the cost of interpretability, which is partially recovered through complementary importance diagnostics and interactive exploration tools.
-
-# Clustering World Economies with K-Means & PCA
-
-## Objective
-
-An unsupervised machine learning study of cross-country development data, testing whether algorithmic clustering of ten standardized World Development Indicators recovers groupings consistent with the World Bank's expert-defined income classifications.
-
-## Methodology
-
-- **Data acquisition.** Fetched ten World Development Indicators for roughly 160 countries via the World Bank WDI API (`wbgapi`), spanning income (GDP per capita at PPP), health (life expectancy, infant mortality), education (primary enrollment), inequality (Gini), environment (CO₂ per capita), connectivity (internet penetration), trade openness (trade as a share of GDP), labor (unemployment rate), and urbanization.
-- **Cleaning and imputation.** Dropped countries missing more than three of the ten indicators and imputed remaining gaps with column-wise medians to preserve cross-country comparability.
-- **Feature standardization.** Applied `StandardScaler` so each indicator contributed equally to the Euclidean distance metric underlying K-Means. Without this step, GDP per capita — spanning roughly $300 to $120,000 — would have dominated the distance calculation and effectively collapsed the problem to a single variable.
-- **Clustering.** Fit K-Means with K=4 and a fixed random seed to mirror the World Bank's four-tier income taxonomy (Low, Lower-Middle, Upper-Middle, High).
-- **Dimensionality reduction.** Projected the standardized feature space onto its first two principal components via PCA for two-dimensional visualization of cluster geometry.
-- **Model selection.** Evaluated K = 2 through 10 using both the elbow method (within-cluster sum of squares) and silhouette analysis to stress-test the K=4 choice.
-- **Validation.** Cross-tabulated cluster assignments against World Bank income classifications to quantify the alignment between unsupervised structure and expert-defined groupings.
-- **Generalization.** Applied the identical pipeline to the California Housing census-tract dataset, clustering tracts on housing and demographic features to recover economically coherent regional groupings.
-
-## Key Findings
-
-- The first two principal components captured approximately **[XX]%** of the total variance in the ten-indicator feature space, producing a visible development gradient along PC1 separating high-income, high-life-expectancy economies from low-income, high-mortality ones.
-- Silhouette analysis identified **K=[X]** as the mathematically optimal cluster count, though K=4 remained the most economically interpretable choice given its correspondence with existing income tiers.
-- Cluster-to-income-group alignment was strongest at the tails — low-income and high-income countries were classified almost deterministically — and weakest in the middle, where **[note where your upper-middle vs lower-middle clusters bled into each other]**. This is consistent with the well-documented heterogeneity of middle-income economies on non-GDP dimensions.
-- The divergence between algorithmic clusters and expert classifications is itself the finding: countries at similar GDP levels can differ substantially on health, connectivity, inequality, and environmental dimensions, and an unsupervised method recovers that structure without being told to.
-- On the California Housing data, the pipeline surfaced clusters that map onto recognizable economic geographies — **[insert your cluster labels, e.g., coastal high-income, inland agricultural, urban high-density, suburban middle-income]**.
-
-## Reproducibility
-
-All K-Means fits use `random_state=42`. The full preprocessing, modeling, and evaluation pipeline is contained in `notebooks/lab_ch22_guided.ipynb`, with figures exported to `figures/`.
-
-## Stack
-
-`wbgapi` · `pandas` · `scikit-learn` (`KMeans`, `StandardScaler`, `PCA`, `silhouette_score`) · `matplotlib` · `seaborn`
-
-I need help writing a project description for my data science lab.
-**Important Rule:** Do NOT generate any Python code for me.
-**What I did in this lab:**
-* Loaded and preprocessed FOMC meeting minutes (tokenized, lemmatized, stop words removed)
-* Built a TF-IDF document-term matrix with unigrams and bigrams
-* Computed Loughran-McDonald sentiment scores (net sentiment + uncertainty)
-* Visualized sentiment trends across 20+ years of FOMC minutes
-* Clustered FOMC documents with K-Means on PCA-reduced TF-IDF vectors
-* Compared pre-COVID vs post-COVID sentiment distributions
-* Key finding: K-Means (K=3) on PCA-reduced TF-IDF vectors (50 components, 83.7% explained variance, silhouette=0.176) recovered three temporally coherent language regimes — an early-2000s cluster, a 2008–2009 crisis cluster, and a post-2009 modern-communication cluster — suggesting the Fed's vocabulary evolves in discrete era-shifts rather than smoothly. Sentiment analysis showed net sentiment dropped roughly two-thirds from pre-COVID (0.0081) to post-COVID (0.0028), a statistically significant shift toward more negative language, while uncertainty remained essentially flat (0.0219 vs 0.0212) — indicating the Fed's tone darkened after March 2020 but its rate of hedging language stayed baked into the standard forward-guidance template.
-**Please write a README.md entry including:**
-1. Project Title: FedSpeak Analysis — NLP on FOMC Minutes
-2. Objective: A professional one-sentence summary
-3. Methodology: Bullet points of technical steps
-4. Key Findings: Summary of results
-Make this sound like a professional tech economist wrote it.
-
-# Causal ML — Double Machine Learning for 401(k) Policy Evaluation
-
-## Objective
-
-A causal inference study of the effect of 401(k) eligibility on household net financial assets, applying Double Machine Learning (DML) to the Chernozhukov–Hansen pension dataset to isolate the treatment effect from high-dimensional confounding while quantifying heterogeneity across the income distribution.
-
-## Methodology
-
-- **Regularization-bias demonstration.** Simulated a data-generating process with a known true ATE of 5.0 and 100 high-dimensional covariates, then fit a naive LASSO on the outcome regressed on treatment plus covariates. The LASSO penalty shrank the treatment coefficient toward zero, illustrating why prediction-optimal ML is not identification-optimal: the regularizer cannot distinguish the causal variable from nuisance covariates.
-- **Partially Linear Regression via Double ML.** Loaded the Chernozhukov–Hansen 401(k) dataset (n = 9,915) via `doubleml.datasets.fetch_401K`. Configured a `DoubleMLData` object with `net_tfa` as the outcome, `e401` as the binary treatment, and the remaining household-level demographics as controls.
-- **Flexible nuisance learners.** Fit two Random Forest regressors (200 trees, max depth 5) as the outcome model and treatment model, allowing nonlinear and interactive confounding structure without hand-specified functional forms.
-- **5-fold cross-fitting.** Estimated nuisance functions on out-of-fold data to prevent overfitting bias from contaminating the causal parameter. Results are averaged across folds and reported with asymptotic standard errors and 95% confidence intervals.
-- **Heterogeneous treatment effects.** Partitioned the sample into income quartiles (Q1–Q4) and re-estimated DML separately within each stratum to recover a Conditional ATE profile, with fold-level refitting inside each quartile to preserve the cross-fitting guarantee.
-- **Visualization.** Plotted quartile-level ATEs with 95% confidence bands to surface the dose-response pattern of 401(k) eligibility across the income distribution.
-
-## Key Findings
-
-- **Average Treatment Effect.** Eligibility for a 401(k) plan increases household net financial assets by approximately **$[ATE]** on average, with a 95% confidence interval of **[$LOW, $HIGH]** — statistically significant at conventional levels and consistent in magnitude with the Chernozhukov–Hansen (2018) original estimates.
-- **Regularization-bias benchmark.** The naive LASSO specification returned a treatment coefficient of approximately **[LASSO_ATE]** against a true value of 5.0 — a bias of **[BIAS]%** — validating the motivation for the DML residualization strategy.
-- **Heterogeneity across the income distribution.** The treatment effect varied substantially by quartile: **[Q1]** at the bottom, rising to **[Q4]** at the top. The monotonicity is consistent with mechanisms familiar from public finance — higher-income households face higher marginal tax rates (making the tax shelter more valuable per dollar), have greater disposable income to contribute up to the match cap, and can redirect existing savings into the tax-advantaged vehicle rather than generating new savings behavior.
-- **Policy implication.** The divergence between average and quartile-level effects is itself the policy-relevant result. An intervention evaluated solely by its ATE understates the efficiency gains at the top and overstates the welfare benefit at the bottom, creating a genuine trade-off between targeting impact (higher-income households respond more per dollar of subsidy) and targeting need (lower-income households have the greatest retirement-security shortfall).
-
-## Robustness
-
-Sensitivity analysis via the Chernozhukov et al. (2023) omitted-variable-bias framework indicates that an unobserved confounder would need to account for at least **[RV]%** of the residual variation in both the outcome and the treatment to drive the estimated effect to zero, and **[RVa]%** to render the 95% confidence interval inclusive of zero. Given that Chernozhukov et al. argue plausible unmeasured confounding in this setting is bounded below 4%, the estimated effect is robust to the most economically defensible confounding scenarios.
-
-## Reproducibility
-
-All nuisance estimators are seeded with `random_state=42`, and cross-fitting uses 5 folds with a single repetition. The full estimation pipeline, CATE analysis, sensitivity diagnostics, and visualizations are contained in `notebooks/lab_24_double_ml.ipynb`, with figures exported to `figures/`. The P.R.I.M.E. verification log for the AI-assisted sensitivity analysis is in `verification-log.md`.
-
-## Stack
-
-`doubleml` (DoubleMLPLR, DoubleMLData, sensitivity_analysis) · `scikit-learn` (RandomForestRegressor, LassoCV) · `pandas` · `numpy` · `matplotlib` · `plotly`
+MIT — academic project, free to reuse with attribution.
